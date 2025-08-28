@@ -1,5 +1,5 @@
 import discord
-from discord.ext import commands, tasks
+from discord.ext import commands
 import aiohttp
 from bs4 import BeautifulSoup
 import asyncio
@@ -168,19 +168,6 @@ class CTFBot(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         self.scraper = CTFScraper()
-        self.weekly_check.start()
-
-    def cog_unload(self):
-        self.weekly_check.cancel()
-
-    @tasks.loop(hours=168)  # Run every week (168 hours)
-    async def weekly_check(self):
-        """Weekly task to check for upcoming CTFs"""
-        await self.check_ctfs()
-
-    @weekly_check.before_loop
-    async def before_weekly_check(self):
-        await self.bot.wait_until_ready()
 
     async def check_ctfs(self):
         """Check for upcoming CTFs and send Discord notification"""
@@ -209,7 +196,7 @@ class CTFBot(commands.Cog):
                 print(f"Could not find channel with ID: {CHANNEL_ID}")
                 
         except Exception as e:
-            print(f"Error in weekly check: {e}")
+            print(f"Error in check: {e}")
 
     async def send_ctf_notification(self, channel, events: List[CTFEvent]):
         """Send CTF notification to Discord channel"""
@@ -301,6 +288,10 @@ class CTFBot(commands.Cog):
 async def on_ready():
     print(f'{bot.user} has connected to Discord!')
     print(f'Bot is in {len(bot.guilds)} guilds')
+    cog = bot.get_cog('CTFBot')
+    if cog:
+        await cog.check_ctfs()
+    await bot.close()
 
 @bot.event
 async def on_command_error(ctx, error):
