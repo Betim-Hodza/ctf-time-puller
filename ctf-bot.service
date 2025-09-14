@@ -1,0 +1,19 @@
+# template add virt env and path
+[Unit]
+Description=CTF Bot Discord Notification Service
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+ExecStart=[path to python virtual environment] [path to ctftime.py]
+WorkingDirectory= [path to ctftime dir]
+EnvironmentFile= [path to python virt env]
+User= [user]
+Group= [group]
+Restart=no
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,12 @@
+# this is a template for when the bot should post to the discord server
+[Unit]
+Description=Run CTF Bot weekly 
+Requires=ctf-bot.service
+
+[Timer]
+OnCalendar=Thursday *-*-* 08:00:00
+Persistent=true
+Unit=ctf-bot.service
+
+[Install]
+WantedBy=timers.target
